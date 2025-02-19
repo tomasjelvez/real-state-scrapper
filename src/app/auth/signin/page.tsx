@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
@@ -13,11 +13,10 @@ import {
   Paper,
   Link as MuiLink,
 } from "@mui/material";
-import Link from "next/link";
 
 export default function SignInPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -25,9 +24,20 @@ export default function SignInPage() {
     password: "",
   });
 
-  if (session) {
-    router.push("/");
-    return null;
+  useEffect(() => {
+    if (session) {
+      router.push("/");
+    }
+  }, [session, router]);
+
+  if (status === "loading") {
+    return (
+      <Container>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
+          <Typography>Cargando...</Typography>
+        </Box>
+      </Container>
+    );
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -128,9 +138,12 @@ export default function SignInPage() {
               {loading ? "Iniciando sesión..." : "Iniciar sesión"}
             </Button>
             <Box sx={{ textAlign: "center", mt: 2 }}>
-              <Link href="/auth/signup" passHref>
-                <MuiLink>¿No tienes una cuenta? Regístrate</MuiLink>
-              </Link>
+              <MuiLink
+                onClick={() => router.push("/auth/signup")}
+                sx={{ cursor: "pointer" }}
+              >
+                ¿No tienes una cuenta? Regístrate
+              </MuiLink>
             </Box>
           </Box>
         </Paper>
