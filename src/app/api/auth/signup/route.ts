@@ -14,7 +14,16 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if user exists
+    try {
+      await prisma.$connect();
+    } catch (error) {
+      console.error("Database connection error:", error);
+      return NextResponse.json(
+        { message: "Error de conexión a la base de datos" },
+        { status: 500 }
+      );
+    }
+
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -26,10 +35,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Hash password
     const hashedPassword = await hash(password, 10);
 
-    // Create user
     const user = await prisma.user.create({
       data: {
         email,
@@ -50,9 +57,12 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error de registro:", error);
+    console.error("Error detallado:", error);
     return NextResponse.json(
-      { message: "Error interno del servidor" },
+      {
+        message: "Error interno del servidor",
+        error: process.env.NODE_ENV === "development" ? error : undefined,
+      },
       { status: 500 }
     );
   }

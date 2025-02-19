@@ -79,8 +79,12 @@ export default function SignUpPage() {
         }),
       });
 
-      const data = await response.json().catch(() => null);
-      console.log(data);
+      const data = await response.json().catch(() => ({
+        message: "Error al procesar la respuesta",
+      }));
+
+      console.log("Response status:", response.status);
+      console.log("Response data:", data);
 
       if (!response.ok) {
         throw new Error(data?.message || "Error al crear la cuenta");
@@ -99,8 +103,8 @@ export default function SignUpPage() {
 
       router.push("/");
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Ocurrió un error");
       console.error("Error completo:", error);
+      setError(error instanceof Error ? error.message : "Ocurrió un error");
     } finally {
       setLoading(false);
     }
