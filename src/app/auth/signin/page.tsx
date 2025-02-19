@@ -52,14 +52,17 @@ export default function SignInPage() {
         redirect: false,
       });
 
+      console.log("SignIn result:", result);
+
       if (result?.error) {
-        setError("Correo o contraseña inválidos");
+        console.error("SignIn error:", result.error);
+        setError("Credenciales inválidas");
       } else {
         router.push("/");
       }
     } catch (error) {
+      console.error("SignIn catch error:", error);
       setError("Ocurrió un error al iniciar sesión");
-      console.error(error);
     } finally {
       setLoading(false);
     }
