@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import {
   Box,
   Button,
@@ -11,12 +11,12 @@ import {
   Typography,
   Alert,
   Paper,
+  Link as MuiLink,
 } from "@mui/material";
-import Link from "next/link";
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -26,9 +26,20 @@ export default function SignUpPage() {
     confirmPassword: "",
   });
 
-  if (session) {
-    router.push("/");
-    return null;
+  useEffect(() => {
+    if (session) {
+      router.push("/");
+    }
+  }, [session, router]);
+
+  if (status === "loading") {
+    return (
+      <Container>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
+          <Typography>Cargando...</Typography>
+        </Box>
+      </Container>
+    );
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,8 +47,23 @@ export default function SignUpPage() {
     setLoading(true);
     setError("");
 
+    // Email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Por favor ingresa un correo electrónico válido");
+      setLoading(false);
+      return;
+    }
+
+    // Password validation
+    if (formData.password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres");
+      setLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError("Las contraseñas no coinciden");
       setLoading(false);
       return;
     }
@@ -53,16 +79,28 @@ export default function SignUpPage() {
         }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
+      console.log(data);
 
       if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(data?.message || "Error al crear la cuenta");
       }
 
-      router.push("/auth/signin");
+      // Auto sign in after successful registration
+      const result = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        throw new Error("Error al iniciar sesión automáticamente");
+      }
+
+      router.push("/");
     } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
-      console.error(error);
+      setError(error instanceof Error ? error.message : "Ocurrió un error");
+      console.error("Error completo:", error);
     } finally {
       setLoading(false);
     }
@@ -167,9 +205,12 @@ export default function SignUpPage() {
               {loading ? "Creando cuenta..." : "Crear cuenta"}
             </Button>
             <Box sx={{ textAlign: "center", mt: 2 }}>
-              <Link href="/auth/signin">
+              <MuiLink
+                onClick={() => router.push("/auth/signin")}
+                sx={{ cursor: "pointer" }}
+              >
                 ¿Ya tienes una cuenta? Iniciar sesión
-              </Link>
+              </MuiLink>
             </Box>
           </Box>
         </Paper>
