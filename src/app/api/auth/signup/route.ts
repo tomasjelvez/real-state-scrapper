@@ -4,7 +4,15 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, username } = await req.json();
+    const body = await req.json();
+    const { email, password, username } = body;
+
+    if (!email || !password || !username) {
+      return NextResponse.json(
+        { message: "Faltan campos requeridos" },
+        { status: 400 }
+      );
+    }
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
@@ -13,7 +21,7 @@ export async function POST(req: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { message: "User already exists" },
+        { message: "El usuario ya existe" },
         { status: 400 }
       );
     }
@@ -27,19 +35,24 @@ export async function POST(req: Request) {
         email,
         username,
         password: hashedPassword,
-        favorites: [],
       },
     });
-    console.log(user);
 
     return NextResponse.json(
-      { message: "User created successfully" },
+      {
+        message: "Usuario creado exitosamente",
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+        },
+      },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("Error de registro:", error);
     return NextResponse.json(
-      { message: "Something went wrong" },
+      { message: "Error interno del servidor" },
       { status: 500 }
     );
   }
