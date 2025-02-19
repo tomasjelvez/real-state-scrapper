@@ -60,7 +60,7 @@ export default function Home() {
           }}
         >
           <Typography variant="h4" component="h1" gutterBottom>
-            Bienvenido, {session?.user?.name || "Usuario"}
+            Bienvenid@, {session?.user?.name || "Usuario"}
           </Typography>
           <Typography
             variant="body1"
