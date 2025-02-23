@@ -13,7 +13,7 @@ model User {
   username String
   email    String   @unique
   password String
-  favorites String[] 
+  favorites Favorite[]
   searches Search[]
 }
 
@@ -23,4 +23,15 @@ model Search {
   userId   String
   user     User    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model Favorite {
+  id          String   @id @default(cuid())
+  userId      String
+  propertyId  String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [email])
+
+  @@unique([userId, propertyId])
+  @@index([userId])
 }
