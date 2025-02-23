@@ -234,6 +234,9 @@ export default function Home() {
     propertyType: "departamento",
     location: "",
   });
+  const [favoriteStatus, setFavoriteStatus] = useState<Record<string, boolean>>(
+    {}
+  );
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/auth");
@@ -242,6 +245,38 @@ export default function Home() {
   if (status === "unauthenticated") {
     return null;
   }
+
+  // Fetch favorite status for displayed properties
+  const fetchFavoriteStatus = async (properties: Property[]) => {
+    try {
+      const ids = properties
+        .map((p) => p.propertyId)
+        .filter((id): id is string => id !== undefined && id !== null);
+      if (ids.length === 0) return;
+
+      const url = new URL("/api/favorites", window.location.origin);
+      ids.forEach((id) => url.searchParams.append("propertyId", id));
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const status = await response.json();
+      setFavoriteStatus(status);
+    } catch (error) {
+      console.error("Error fetching favorite status:", error);
+      setFavoriteStatus({}); // Reset on error
+    }
+  };
+
+  // Call fetchFavoriteStatus when properties change
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    if (properties.length > 0) {
+      fetchFavoriteStatus(properties);
+    }
+  }, [properties]);
 
   const handleSearch = async () => {
     setIsLoading(true);
@@ -261,7 +296,9 @@ export default function Home() {
         router.push("/auth");
         return;
       }
-      setProperties(await response.json());
+      const data = await response.json();
+      setProperties(data);
+      fetchFavoriteStatus(data);
     } catch (error) {
       console.error("Error fetching properties:", error);
     } finally {
@@ -289,6 +326,30 @@ export default function Home() {
     document.cookie =
       "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     router.push("/auth");
+  };
+
+  const handleToggleFavorite = async (propertyId: string) => {
+    try {
+      const response = await fetch("/api/favorites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ propertyId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to toggle favorite");
+      }
+
+      const { isFavorite } = await response.json();
+      setFavoriteStatus((prev) => ({
+        ...prev,
+        [propertyId]: isFavorite,
+      }));
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
   };
 
   return (
@@ -321,7 +382,11 @@ export default function Home() {
             <Grid container spacing={3}>
               {properties.map((property, index) => (
                 <Grid item key={index} xs={12} sm={6} md={4}>
-                  <PropertyCard property={property} />
+                  <PropertyCard
+                    property={property}
+                    isFavorite={favoriteStatus[property.propertyId || ""]}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
                 </Grid>
               ))}
             </Grid>

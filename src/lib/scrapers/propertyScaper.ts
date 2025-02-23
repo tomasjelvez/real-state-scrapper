@@ -40,12 +40,27 @@ export async function scrapeProperties(url: string): Promise<Property[]> {
             .querySelector(".poly-component__picture")
             ?.getAttribute("src") ||
           "";
-        const href =
+        const fullHref =
           element
             .querySelector(".poly-component__title")
             ?.getAttribute("href") || "";
 
-        return { title, price, currency, location, features, imageUrl, href };
+        // Clean href by removing everything after '#'
+        const href = fullHref.split("#")[0];
+
+        // Extract propertyId from MLC-XXXXXXXXX pattern
+        const propertyId = href.match(/MLC-(\d+)/)?.[1] || "";
+
+        return {
+          title,
+          price,
+          currency,
+          location,
+          features,
+          imageUrl,
+          href, // Clean href without tracking params
+          propertyId, // Just the numeric ID
+        };
       });
 
       properties.push(propertyData);
