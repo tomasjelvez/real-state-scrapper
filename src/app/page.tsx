@@ -282,6 +282,17 @@ export default function Home() {
     setIsLoading(true);
     let url = "";
     try {
+      // Save search to history
+      await fetch("/api/searches", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: JSON.stringify(filters), // Save all filters
+        }),
+      });
+
       if (filters.location.length > 3) {
         const params = new URLSearchParams(filters);
         const urlResponse = await fetch(`/api/urls?${params}`);
