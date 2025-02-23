@@ -1,11 +1,13 @@
-import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 import { Property } from "@/types/property";
 
 export async function scrapeProperties(url: string): Promise<Property[]> {
   const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    defaultViewport: { width: 1920, height: 1080 },
   });
   const properties: Property[] = [];
 
@@ -68,7 +70,7 @@ export async function scrapeProperties(url: string): Promise<Property[]> {
 
     return properties;
   } catch (error) {
-    console.error("Scraping error:", error);
+    console.error("Error scraping properties:", error);
     return [];
   } finally {
     await browser.close();

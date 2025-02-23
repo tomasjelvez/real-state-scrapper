@@ -1,4 +1,5 @@
-import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 
 export async function scrapeSearchUrl(
   operation: string,
@@ -6,9 +7,10 @@ export async function scrapeSearchUrl(
   location: string
 ): Promise<string> {
   const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    defaultViewport: { width: 1920, height: 1080 },
   });
 
   try {

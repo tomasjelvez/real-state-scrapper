@@ -1,11 +1,15 @@
-import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 
 export async function scrapeLocations(searchText: string): Promise<string[]> {
   const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    defaultViewport: { width: 1920, height: 1080 },
   });
+  console.log("Browser launched", browser);
+  console.log("Searching for", searchText);
 
   try {
     const page = await browser.newPage();
