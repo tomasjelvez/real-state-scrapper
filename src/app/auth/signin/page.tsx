@@ -52,16 +52,15 @@ export default function SignInPage() {
         redirect: false,
       });
 
-      console.log("SignIn result:", result);
+      console.log("SignIn attempt result:", result);
 
       if (result?.error) {
-        console.error("SignIn error:", result.error);
         setError("Credenciales inválidas");
-      } else {
+      } else if (result?.ok) {
         router.push("/");
       }
     } catch (error) {
-      console.error("SignIn catch error:", error);
+      console.error("SignIn error:", error);
       setError("Ocurrió un error al iniciar sesión");
     } finally {
       setLoading(false);
