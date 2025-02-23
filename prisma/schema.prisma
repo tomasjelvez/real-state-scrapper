@@ -14,15 +14,17 @@ model User {
   email    String   @unique
   password String
   favorites Favorite[]
-  searches Search[]
+  searches SearchHistory[]
 }
 
-model Search {
-  id       String  @id @default(uuid())
-  query    String
-  userId   String
-  user     User    @relation(fields: [userId], references: [id])
+model SearchHistory {
+  id        String   @id @default(cuid())
+  query     String
+  userId    String
+  user      User     @relation(fields: [userId], references: [email])
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Favorite {
