@@ -6,4 +6,5 @@ export interface Property {
   features?: string[];
   imageUrl?: string;
   href?: string;
+  propertyId?: string;
 }
