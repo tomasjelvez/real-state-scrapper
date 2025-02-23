@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 // This function will wrap the handling of each request
 export default withAuth(
-  function middleware(req) {
+  function middleware() {
     return NextResponse.next();
   },
   {
