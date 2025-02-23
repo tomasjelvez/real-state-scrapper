@@ -11,10 +11,6 @@ export default withAuth(
       // Return true if the user is authenticated, false otherwise
       authorized: ({ token }) => !!token,
     },
-    pages: {
-      // When not authorized, redirect to this page
-      signIn: "/auth",
-    },
   }
 );
 
