@@ -333,10 +333,7 @@ export default function Home() {
   };
 
   const handleLogout = async () => {
-    await signOut({ redirect: false });
-    document.cookie =
-      "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    router.push("/auth");
+    await signOut({ redirect: true, callbackUrl: "/auth" });
   };
 
   const handleToggleFavorite = async (propertyId: string) => {
