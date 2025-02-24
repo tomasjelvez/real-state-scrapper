@@ -8,8 +8,7 @@
     "outputDirectory": ".next",
     "installCommand": "npm install",
     "buildCommand": "npm run build",
-    "rootDirectory": ".",
-    "ignoreCommand": "git diff HEAD^ HEAD --quiet ./scraping-service/",
+    "ignoreCommand": "git diff HEAD^ HEAD ./scraping-service/ --quiet",
     "git": {
         "deploymentEnabled": {
             "scraping-service": false
