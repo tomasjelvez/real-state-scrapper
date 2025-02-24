@@ -5,8 +5,14 @@
             "schedule": "0 0 * * *"
         }
     ],
-    "ignoreCommand": "git diff --quiet HEAD^ HEAD ./scraping-service/",
-    "buildCommand": "npm run build",
     "outputDirectory": ".next",
-    "installCommand": "npm install"
+    "installCommand": "npm install",
+    "buildCommand": "npm run build",
+    "rootDirectory": ".",
+    "ignoreCommand": "git diff HEAD^ HEAD --quiet ./scraping-service/",
+    "git": {
+        "deploymentEnabled": {
+            "scraping-service": false
+        }
+    }
 }
