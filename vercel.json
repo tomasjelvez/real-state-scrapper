@@ -4,5 +4,9 @@
             "path": "/api/reports/daily",
             "schedule": "0 0 * * *"
         }
-    ]
+    ],
+    "ignoreCommand": "git diff --quiet HEAD^ HEAD ./scraping-service/",
+    "buildCommand": "npm run build",
+    "outputDirectory": ".next",
+    "installCommand": "npm install"
 }

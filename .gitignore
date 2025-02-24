@@ -40,10 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
 # scraping-service
 scraping-service/node_modules
 scraping-service/.next
 scraping-service/dist
 scraping-service/package-lock.json
 scraping-service/yarn.lock
+scraping-service/dist/
+scraping-service/node_modules/
+
