@@ -16,6 +16,7 @@
     "@mui/material": "^6.4.5",
     "@next-auth/supabase-adapter": "^0.2.1",
     "@prisma/client": "^6.4.0",
+    "@sparticuz/chromium": "^132.0.0",
     "@supabase/supabase-js": "^2.48.1",
     "bcrypt": "^5.1.1",
     "date-fns": "^4.1.0",
