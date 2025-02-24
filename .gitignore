@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# real-estate-scraper-service
+real-estate-scraper-service/node_modules
+real-estate-scraper-service/.next
+real-estate-scraper-service/dist
