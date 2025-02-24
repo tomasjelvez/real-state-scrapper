@@ -2,19 +2,21 @@ import puppeteer from "puppeteer";
 import { Property } from "@/types/property";
 
 export async function scrapeProperties(url: string): Promise<Property[]> {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    defaultViewport: { width: 1920, height: 1080 },
-  });
+  console.log("Scraping properties from:", url);
   const properties: Property[] = [];
+  let browser;
 
   try {
+    browser = await puppeteer.launch({
+      headless: "new",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      defaultViewport: { width: 1920, height: 1080 },
+    });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle0" });
     const elHandleArray = await page.$$(".ui-search-layout__item");
 
-    elHandleArray.forEach(async (el) => {
+    for (const el of elHandleArray) {
       const propertyData = await el.evaluate((element) => {
         const title =
           element.querySelector(".poly-component__title")?.textContent || "";
@@ -64,13 +66,15 @@ export async function scrapeProperties(url: string): Promise<Property[]> {
       });
 
       properties.push(propertyData);
-    });
+    }
 
     return properties;
   } catch (error) {
     console.error("Scraping error:", error);
     return [];
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 }

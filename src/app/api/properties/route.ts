@@ -1,20 +1,25 @@
 import { NextResponse } from "next/server";
-import { scrapeProperties } from "@/lib/scrapers/propertyScaper";
+
+const SCRAPING_SERVICE_URL = process.env.SCRAPING_SERVICE_URL;
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const url = searchParams.get("url") || "";
-    const properties = await scrapeProperties(url);
 
-    if (!properties.length) {
+    const response = await fetch(
+      `${SCRAPING_SERVICE_URL}/api/properties?url=${encodeURIComponent(url)}`
+    );
+    const data = await response.json();
+
+    if (!response.ok) {
       return NextResponse.json(
-        { message: "No se encontraron propiedades" },
-        { status: 404 }
+        { message: data.message || "No se encontraron propiedades" },
+        { status: response.status }
       );
     }
 
-    return NextResponse.json(properties);
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching properties:", error);
     return NextResponse.json(

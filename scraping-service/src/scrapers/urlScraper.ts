@@ -6,12 +6,13 @@ export async function scrapeSearchUrl(
   location: string
 ): Promise<string> {
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: "new",
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
     defaultViewport: { width: 1920, height: 1080 },
   });
 
   try {
+    console.log("Scraping search URL for:", operation, propertyType, location);
     const page = await browser.newPage();
     const baseUrl = "https://www.portalinmobiliario.com";
     const searchUrl = `${baseUrl}/${operation}/${propertyType}/${location}`;
@@ -28,6 +29,7 @@ export async function scrapeSearchUrl(
     await page.click(".andes-button--loud");
     await page.waitForNavigation();
 
+    console.log("Search URL:", page.url());
     return page.url();
   } catch (error) {
     console.error("Error getting search URL:", error);
