@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { scrapeLocations } from "@/lib/scrapers/locationScraper";
+
+const SCRAPING_SERVICE_URL = process.env.SCRAPING_SERVICE_URL;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -9,6 +10,16 @@ export async function GET(request: Request) {
     return NextResponse.json([]);
   }
 
-  const locations = await scrapeLocations(search);
-  return NextResponse.json(locations);
+  try {
+    const response = await fetch(
+      `${SCRAPING_SERVICE_URL}/api/locations?search=${encodeURIComponent(
+        search
+      )}`
+    );
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error fetching locations:", error);
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
 }

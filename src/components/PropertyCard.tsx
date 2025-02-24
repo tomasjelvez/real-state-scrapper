@@ -14,7 +14,7 @@ import SquareFootIcon from "@mui/icons-material/SquareFoot";
 import WcIcon from "@mui/icons-material/Wc";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { Property } from "@/types/property";
+import { Property } from "../../scraping-service/src/types/property";
 import { useState, useEffect } from "react";
 
 interface PropertyCardProps {

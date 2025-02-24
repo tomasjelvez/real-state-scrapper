@@ -12,6 +12,7 @@ export async function scrapeSearchUrl(
   });
 
   try {
+    console.log("Scraping search URL for:", operation, propertyType, location);
     const page = await browser.newPage();
     const baseUrl = "https://www.portalinmobiliario.com";
     const searchUrl = `${baseUrl}/${operation}/${propertyType}/${location}`;
@@ -28,6 +29,7 @@ export async function scrapeSearchUrl(
     await page.click(".andes-button--loud");
     await page.waitForNavigation();
 
+    console.log("Search URL:", page.url());
     return page.url();
   } catch (error) {
     console.error("Error getting search URL:", error);

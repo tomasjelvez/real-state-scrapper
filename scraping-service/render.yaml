@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: scraping-service
+    env: docker
+    buildCommand: docker build -t scraping-service .
+    startCommand: docker run -p $PORT:3001 scraping-service
+    envVars:
+      - key: FRONTEND_URL
+        value: https://real-state-scraper-git-render-deploy-tomas-jelvezs-projects.vercel.app/
+      - key: PORT
+        value: 3001

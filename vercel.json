@@ -4,5 +4,15 @@
             "path": "/api/reports/daily",
             "schedule": "0 0 * * *"
         }
-    ]
+    ],
+    "outputDirectory": ".next",
+    "installCommand": "npm install",
+    "buildCommand": "npm run build",
+    "rootDirectory": ".",
+    "ignoreCommand": "git diff HEAD^ HEAD --quiet ./scraping-service/",
+    "git": {
+        "deploymentEnabled": {
+            "scraping-service": false
+        }
+    }
 }
