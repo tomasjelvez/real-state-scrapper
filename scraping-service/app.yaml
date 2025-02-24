@@ -1,0 +1,13 @@
+name: scraping-service
+services:
+  - name: api
+    github:
+      branch: main
+      deploy_on_push: true
+    build_command: npm install && npm run build
+    run_command: npm start
+    envs:
+      - key: PORT
+        value: "3001"
+      - key: FRONTEND_URL
+        value: "https://your-frontend-domain.com"
