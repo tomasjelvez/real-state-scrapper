@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { Property } from "@/types/property";
+import { Property } from "../types/property";
 
 export async function scrapeProperties(url: string): Promise<Property[]> {
   console.log("Scraping properties from:", url);
@@ -8,7 +8,7 @@ export async function scrapeProperties(url: string): Promise<Property[]> {
 
   try {
     browser = await puppeteer.launch({
-      headless: "new",
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
       defaultViewport: { width: 1920, height: 1080 },
     });

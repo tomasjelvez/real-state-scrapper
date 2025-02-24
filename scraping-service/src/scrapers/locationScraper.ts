@@ -2,7 +2,7 @@ import puppeteer from "puppeteer";
 
 export async function scrapeLocations(searchText: string): Promise<string[]> {
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
     defaultViewport: { width: 1920, height: 1080 },
   });

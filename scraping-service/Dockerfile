@@ -2,27 +2,24 @@ FROM ghcr.io/puppeteer/puppeteer:21.7.0
 
 WORKDIR /app
 
-# Set up permissions
+# Set up permissions as root
 USER root
 RUN mkdir -p /app/node_modules && \
     chown -R pptruser:pptruser /app
 
-# Copy package files
+# Copy all files first
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY src ./src
 
-# Set ownership of copied files
+# Set ownership of all files while still root
 RUN chown -R pptruser:pptruser /app
 
-# Switch to pptruser for npm operations
+# Switch to pptruser for remaining operations
 USER pptruser
 
 # Install dependencies
 RUN npm install
-
-# Copy source code and set ownership
-COPY src ./src
-RUN chown -R pptruser:pptruser /app/src
 
 # Build TypeScript
 RUN npm run build
