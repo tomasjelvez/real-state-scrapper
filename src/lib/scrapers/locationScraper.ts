@@ -1,10 +1,12 @@
-import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 
 export async function scrapeLocations(searchText: string): Promise<string[]> {
   const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    defaultViewport: { width: 1920, height: 1080 },
   });
 
   try {
@@ -17,9 +19,7 @@ export async function scrapeLocations(searchText: string): Promise<string[]> {
     await page.type(
       'input[placeholder="Ingresa comuna o ciudad"]',
       searchText,
-      {
-        delay: 100,
-      }
+      { delay: 100 }
     );
 
     await page.waitForSelector(".andes-list__item");
