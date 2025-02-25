@@ -162,7 +162,12 @@ const SearchForm = ({
               location: newValue || "",
             });
           }}
-          onInputChange={(_, value) => handleLocationSearch(value)}
+          onInputChange={(_, value, reason) => {
+            if (reason === "input") {
+              // Only search when typing
+              handleLocationSearch(value);
+            }
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
