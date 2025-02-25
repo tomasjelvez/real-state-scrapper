@@ -8,6 +8,7 @@ export async function scrapeSearchUrl(
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    timeout: 60000, // Increase timeout to 60 seconds
     defaultViewport: { width: 1920, height: 1080 },
   });
 
