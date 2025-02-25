@@ -21,7 +21,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { PropertyCard } from "@/components/PropertyCard";
-import { Property } from "../../scraping-service/src/types/property";
+import { Property } from "@/types/property";
 import { propertyTypesByOperation } from "@/lib/data/propertieTypesByOperation";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SearchIcon from "@mui/icons-material/Search";
