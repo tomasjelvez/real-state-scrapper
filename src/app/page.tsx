@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
@@ -19,12 +19,12 @@ import {
   Autocomplete,
   ListItemButton,
   ListItemText,
+  CircularProgress,
 } from "@mui/material";
 import { PropertyCard } from "@/components/PropertyCard";
 import { Property } from "@/lib/types/property";
 import { propertyTypesByOperation } from "@/lib/data/propertieTypesByOperation";
 import LogoutIcon from "@mui/icons-material/Logout";
-import SearchIcon from "@mui/icons-material/Search";
 
 // Components
 const WelcomeCard = ({
@@ -89,21 +89,31 @@ const SearchForm = ({
   isLoading: boolean;
 }) => {
   const [locationOptions, setLocationOptions] = useState<string[]>([]);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(false);
 
-  // Simulated location search
-  const handleLocationSearch = async (text: string) => {
-    if (text.length < 3) {
-      setLocationOptions([]);
-      return;
-    }
+  const debouncedSearch = useCallback((text: string) => {
+    const handler = debounce(async (value: string) => {
+      if (value.length < 3) {
+        setLocationOptions([]);
+        return;
+      }
+      setIsLoadingLocations(true);
+      try {
+        const response = await fetch(`/api/locations?search=${value}`);
+        const data = await response.json();
+        setLocationOptions(data);
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      } finally {
+        setIsLoadingLocations(false);
+      }
+    }, 1000);
+    handler(text);
+  }, []);
 
-    try {
-      const response = await fetch(`/api/locations?search=${text}`);
-      const data = await response.json();
-      setLocationOptions(data);
-    } catch (error) {
-      console.error("Error fetching locations:", error);
-    }
+  const handleLocationSearch = (text: string) => {
+    onFilterChange({ location: text });
+    debouncedSearch(text);
   };
 
   return (
@@ -149,26 +159,33 @@ const SearchForm = ({
           value={filters.location}
           onChange={(_, newValue) => {
             onFilterChange({
-              location: newValue || undefined,
+              location: newValue || "",
             });
           }}
-          onInputChange={(_, newInputValue) => {
-            handleLocationSearch(newInputValue);
-          }}
+          onInputChange={(_, value) => handleLocationSearch(value)}
           renderInput={(params) => (
             <TextField
               {...params}
               fullWidth
               label="Ubicación"
-              placeholder="Ingresa comuna o ciudad"
+              placeholder={
+                isLoadingLocations ? "Buscando..." : "Ingresa comuna o ciudad"
+              }
               InputProps={{
                 ...params.InputProps,
                 endAdornment: (
                   <>
+                    {isLoadingLocations && (
+                      <CircularProgress color="inherit" size={20} />
+                    )}
                     {params.InputProps.endAdornment}
-                    <SearchIcon color="action" />
                   </>
                 ),
+              }}
+              sx={{
+                "& .MuiAutocomplete-loading": {
+                  color: "text.secondary",
+                },
               }}
             />
           )}
@@ -197,11 +214,15 @@ const SearchForm = ({
         <Button
           variant="contained"
           fullWidth
-          sx={{ height: "56px" }}
           onClick={onSearch}
-          disabled={isLoading}
+          disabled={isLoading || isLoadingLocations}
+          sx={{ height: "100%" }}
         >
-          {isLoading ? "Buscando..." : "Buscar"}
+          {isLoadingLocations
+            ? "Buscando ubicaciones..."
+            : isLoading
+            ? "Buscando..."
+            : "Buscar"}
         </Button>
       </Grid>
     </Grid>
@@ -406,4 +427,15 @@ export default function Home() {
       </Box>
     </Container>
   );
+}
+
+function debounce(
+  func: (text: string) => Promise<void>,
+  wait: number
+): (...args: Parameters<typeof func>) => void {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<typeof func>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
 }
