@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 const SCRAPING_SERVICE_URL = process.env.SCRAPING_SERVICE_URL;
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const response = await fetch(`${SCRAPING_SERVICE_URL}/test`);
     const data = await response.json();
