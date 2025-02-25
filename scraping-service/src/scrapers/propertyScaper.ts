@@ -1,18 +1,25 @@
 import puppeteer from "puppeteer";
 import { Property } from "../types/property";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export async function scrapeProperties(url: string): Promise<Property[]> {
   console.log("Scraping properties from:", url);
   const properties: Property[] = [];
-  let browser;
-
+  const browser = await puppeteer.launch({
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+    ],
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
+  });
   try {
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      timeout: 60000, // Increase timeout to 60 seconds
-      defaultViewport: { width: 1920, height: 1080 },
-    });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle0" });
     const elHandleArray = await page.$$(".ui-search-layout__item");
