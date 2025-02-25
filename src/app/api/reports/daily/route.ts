@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { generateSearchReport } from "@/lib/reports/searchReport";
 import { sendDailyReport } from "@/lib/email/sendEmail";
 
-export async function POST() {
+export async function GET() {
   try {
     const report = await generateSearchReport();
     console.log(report);
