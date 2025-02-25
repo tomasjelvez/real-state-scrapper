@@ -227,6 +227,7 @@ const LoadingSkeleton = () => (
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
+
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({
@@ -239,11 +240,13 @@ export default function Home() {
   );
 
   useEffect(() => {
-    if (status === "unauthenticated") router.push("/auth");
+    if (status === "unauthenticated") {
+      router.push("/auth");
+    }
   }, [status, router]);
 
-  if (status === "unauthenticated") {
-    return null;
+  if (status === "loading" || status === "unauthenticated") {
+    return <LoadingSkeleton />;
   }
 
   // Fetch favorite status for displayed properties
