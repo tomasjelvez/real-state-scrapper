@@ -162,7 +162,12 @@ const SearchForm = ({
               location: newValue || "",
             });
           }}
-          onInputChange={(_, value) => handleLocationSearch(value)}
+          onInputChange={(_, value, reason) => {
+            if (reason === "input") {
+              // Only search when typing
+              handleLocationSearch(value);
+            }
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -259,16 +264,6 @@ export default function Home() {
   const [favoriteStatus, setFavoriteStatus] = useState<Record<string, boolean>>(
     {}
   );
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth");
-    }
-  }, [status, router]);
-
-  if (status === "loading" || status === "unauthenticated") {
-    return <LoadingSkeleton />;
-  }
 
   // Fetch favorite status for displayed properties
   const fetchFavoriteStatus = async (properties: Property[]) => {
