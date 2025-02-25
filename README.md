@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Property Search Platform
+
+A Next.js application that allows users to search and save their favorite properties from Portal Inmobiliario.
+
+## Features
+
+- 🔐 User Authentication
+- 🏠 Property Search with Filters
+- ❤️ Favorite Properties System
+- 📊 Daily Search Reports
+- 🤖 Automated Web Scraping
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, Material-UI, TypeScript
+- **Backend**: Next.js API Routes
+- **Authentication**: NextAuth.js
+- **Database**: PostgreSQL (Neon)
+- **Email**: NodeMailer
+- **Scraping Service**: Express, Puppeteer
+
+## Project Structure
+
+```
+├── src/
+│   ├── app/              # Next.js App Router
+│   ├── components/       # React Components
+│   ├── lib/             # Utilities and Types
+│   └── types/           # TypeScript Definitions
+├── scraping-service/    # Separate Scraping Service
+└── prisma/             # Database Schema
+```
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+cd scraping-service && npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Set up environment variables
 
-## Learn More
+```bash
+# Main application (.env)
+POSTGRES_PRISMA_URL=
+NEXTAUTH_SECRET=
+NEXTAUTH_URL=
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=
+REPORT_EMAIL=
 
-To learn more about Next.js, take a look at the following resources:
+# Scraping service (.env)
+PORT=3001
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Run the development servers
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Main application
+npm run dev
 
-## Deploy on Vercel
+# Scraping service
+cd scraping-service && npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Docker (Scraping Service)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Build and run the scraping service using Docker:
+
+```bash
+# Build the image
+cd scraping-service
+docker build -t scraping-service .
+
+# Run the container
+docker run -p 3001:3001 --env-file .env scraping-service
+
+# Run in detached mode (background)
+docker run -d -p 3001:3001 --env-file .env scraping-service
+```
+
+5. Open [http://localhost:3000](http://localhost:3000)
+
+## API Routes
+
+- `/api/auth/*` - Authentication endpoints
+- `/api/properties` - Property search
+- `/api/locations` - Location autocomplete
+- `/api/favorites` - Favorite management
+- `/api/reports/daily` - Daily search reports
+
+## Considerations
+
+To search in Portal Inmobiliario we need to choose a location, therefore, we can type and wait to get location suggestions. Then, we select one of those suggestions and click "Buscar", that will give us the properties list below.
