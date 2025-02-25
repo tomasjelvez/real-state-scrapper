@@ -251,7 +251,12 @@ const LoadingSkeleton = () => (
 
 // Main Component
 export default function Home() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push("/auth");
+    },
+  });
   const router = useRouter();
 
   const [properties, setProperties] = useState<Property[]>([]);
@@ -289,13 +294,15 @@ export default function Home() {
     }
   };
 
-  // Call fetchFavoriteStatus when properties change
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (properties.length > 0) {
       fetchFavoriteStatus(properties);
     }
   }, [properties]);
+
+  if (status === "loading") {
+    return <LoadingSkeleton />;
+  }
 
   const handleSearch = async () => {
     setIsLoading(true);
