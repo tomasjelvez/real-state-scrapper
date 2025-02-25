@@ -265,16 +265,6 @@ export default function Home() {
     {}
   );
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth");
-    }
-  }, [status, router]);
-
-  if (status === "loading" || status === "unauthenticated") {
-    return <LoadingSkeleton />;
-  }
-
   // Fetch favorite status for displayed properties
   const fetchFavoriteStatus = async (properties: Property[]) => {
     try {
