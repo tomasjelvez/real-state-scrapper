@@ -251,7 +251,7 @@ const LoadingSkeleton = () => (
 
 // Main Component
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
 
   const [properties, setProperties] = useState<Property[]>([]);
