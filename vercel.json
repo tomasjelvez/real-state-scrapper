@@ -4,5 +4,15 @@
             "path": "/api/reports/daily",
             "schedule": "0 0 * * *"
         }
-    ]
+    ],
+    "functions": {
+        "src/app/api/**/*.ts": {
+            "maxDuration": 60
+        }
+    },
+    "git": {
+        "deploymentEnabled": {
+            "scraping-service": false
+        }
+    }
 }

@@ -1,20 +1,30 @@
 import puppeteer from "puppeteer";
-import { Property } from "@/types/property";
+import { Property } from "../types/property";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export async function scrapeProperties(url: string): Promise<Property[]> {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    defaultViewport: { width: 1920, height: 1080 },
-  });
+  console.log("Scraping properties from:", url);
   const properties: Property[] = [];
-
+  const browser = await puppeteer.launch({
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+    ],
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
+  });
   try {
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle0" });
     const elHandleArray = await page.$$(".ui-search-layout__item");
 
-    elHandleArray.forEach(async (el) => {
+    for (const el of elHandleArray) {
       const propertyData = await el.evaluate((element) => {
         const title =
           element.querySelector(".poly-component__title")?.textContent || "";
@@ -64,13 +74,15 @@ export async function scrapeProperties(url: string): Promise<Property[]> {
       });
 
       properties.push(propertyData);
-    });
+    }
 
     return properties;
   } catch (error) {
     console.error("Scraping error:", error);
     return [];
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 }
