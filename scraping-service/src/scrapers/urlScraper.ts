@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import dotenv from "dotenv";
+import { MINIMAL_ARGS } from "../lib/data/scrapeBowserArgs";
 
 dotenv.config();
 
@@ -9,12 +10,8 @@ export async function scrapeSearchUrl(
   location: string
 ): Promise<string> {
   const browser = await puppeteer.launch({
-    args: [
-      "--disable-setuid-sandbox",
-      "--no-sandbox",
-      "--single-process",
-      "--no-zygote",
-    ],
+    args: MINIMAL_ARGS,
+    headless: true,
     executablePath:
       process.env.NODE_ENV === "production"
         ? process.env.PUPPETEER_EXECUTABLE_PATH
