@@ -42,6 +42,7 @@ export const SearchForm = ({
   const { locationOptions, isLoadingLocations, handleLocationSearch } =
     useLocationSearch();
   const [inputValue, setInputValue] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
 
   return (
     <Grid container spacing={2}>
@@ -85,9 +86,10 @@ export const SearchForm = ({
           options={locationOptions}
           getOptionLabel={(option) => option}
           filterOptions={(x) => x}
-          value={filters.location}
+          value={selectedLocation}
           inputValue={inputValue}
           onChange={(_, newValue) => {
+            setSelectedLocation(newValue || "");
             onFilterChange({
               location: newValue || "",
             });
@@ -96,7 +98,12 @@ export const SearchForm = ({
           onInputChange={(_, value, reason) => {
             if (reason !== "reset") {
               setInputValue(value);
-              onFilterChange({ location: value });
+              if (reason !== "input") {
+                onFilterChange({ location: value });
+              } else {
+                setSelectedLocation("");
+                onFilterChange({ location: "" });
+              }
             }
             if (reason === "input") {
               handleLocationSearch(value);
