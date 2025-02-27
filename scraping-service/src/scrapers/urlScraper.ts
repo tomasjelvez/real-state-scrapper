@@ -29,12 +29,21 @@ export async function scrapeSearchUrl(
     await page.type('input[placeholder="Ingresa comuna o ciudad"]', location, {
       delay: 100,
     });
+    await page.waitForSelector(".andes-list__item-action");
 
-    await page.waitForSelector(".andes-list__item");
-    await page.click(".andes-list__item");
-    await page.waitForSelector(".andes-button--loud");
-    await page.click(".andes-button--loud");
-    await page.waitForNavigation();
+    // Click the first autocomplete suggestion
+    await page.click(".andes-list__item-action");
+
+    // Wait for and click the "Buscar" button
+    await page.waitForSelector(
+      ".andes-button.faceted-search-desktop__elem-actions.andes-button--large.andes-button--loud"
+    );
+    await page.click(
+      ".andes-button.faceted-search-desktop__elem-actions.andes-button--large.andes-button--loud"
+    );
+
+    // Wait for navigation and results to load
+    await page.waitForNavigation({ waitUntil: "networkidle2" });
 
     console.log("Search URL:", page.url());
     return page.url();
